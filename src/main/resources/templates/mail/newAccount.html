@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>[Nom de la librairie] - Bienvenue</title>
+    <style type="text/css">
+        body {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background-color: #FFFFFF;
+            margin: 0 auto;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: #C00F0F;
+            font-family: Arial, sans-serif;
+            font-weight: normal;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        p {
+            margin: 0 0 1.5rem;
+        }
+
+        a {
+            color: #C00F0F;
+            text-decoration: underline;
+        }
+
+        .btn {
+            background-color: #C00F0F;
+            border-radius: 4px;
+            color: #FFFFFF;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #FFFFFF;
+            border: 2px solid #C00F0F;
+            color: #C00F0F;
+        }
+
+        .footer {
+            background-color: #C00F0F;
+            color: #FFFFFF;
+            font-size: 14px;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Bienvenue chez [Nom de la librairie] !</h1>
+        <p>Bonjour <span th:text="${firstName}"></span>,</p>
+        <p>Nous sommes ravis de vous accueillir chez [Nom de la librairie]. Nous espérons que vous apprécierez votre
+            expérience de lecture avec nous.</p>
+        <p>Mais avant ça, veuillez cliquer sur le lien suivant afin de valider votre compte chez nous:</p>
+        <p><a th:href="@{|${validationLink}|}">Valider mon compte</a></p>
+    </div>
+    <div class="footer">
+        <p>The Librari SARL</p>
+    </div>
+</body>
