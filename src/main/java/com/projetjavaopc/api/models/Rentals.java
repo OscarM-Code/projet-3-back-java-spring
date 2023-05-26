@@ -10,16 +10,16 @@ public class Rentals {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     
     @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "surface", nullable = false)
-    private Number surface;
+    private Double surface;
     
     @Column(name = "price", nullable = false)
-    private Number price;
+    private Double price;
 
     @Column(name = "picture", nullable = false)
     private String picture;
@@ -27,20 +27,17 @@ public class Rentals {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "owner_id", nullable = false)
-    private Integer owner_id;
-
     @Column(name = "created_at")
     private Date createdAt;
 
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
     
@@ -52,19 +49,19 @@ public class Rentals {
         this.name = name;
     }
     
-    public Number getSurface() {
+    public Double getSurface() {
         return surface;
     }
 
-    public void setSurface(Number surface) {
+    public void setSurface(Double surface) {
         this.surface = surface;
     }
     
-    public Number getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Number price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -83,6 +80,9 @@ public class Rentals {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+
+    
 
     public Date getCreatedAt() {
         return createdAt;

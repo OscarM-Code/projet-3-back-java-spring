@@ -38,10 +38,8 @@ public class DbConnection {
          return retBean;
      }
 
-     @Bean
-    public DataSourceTransactionManager txnManager()
-     {
-         DataSourceTransactionManager txnManager = new DataSourceTransactionManager(dataSource());
-         return txnManager;
-     }
+     @Bean(name = "transactionManager")
+    public DataSourceTransactionManager getDataSourceTransactionManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
 }

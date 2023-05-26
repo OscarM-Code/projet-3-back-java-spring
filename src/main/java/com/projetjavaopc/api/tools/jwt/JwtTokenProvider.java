@@ -14,6 +14,8 @@ import com.projetjavaopc.api.models.Users;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
@@ -59,6 +61,7 @@ public class JwtTokenProvider {
         Date validity = new Date(now.getTime() + validityInSeconds * 1000);
 
         return Jwts.builder()
+                .setSubject(user.getEmail())
                 .setClaims(claims)
                 .claim("id", user.getId())
                 .claim("username", user.getName())
@@ -111,9 +114,6 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token);
     }
-
-
-
 
     /**
      * Create an authentication context using the content of the JWT token

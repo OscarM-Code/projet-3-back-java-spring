@@ -49,6 +49,12 @@ public class SecurityManager extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/auth/login").permitAll()
                 .antMatchers("/api/auth/register").permitAll()
+                .antMatchers("/api/rentals/test").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/index.html").permitAll()
+                .antMatchers("/v2/**").permitAll()
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
 

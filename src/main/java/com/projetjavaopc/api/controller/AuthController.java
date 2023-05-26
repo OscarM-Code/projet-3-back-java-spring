@@ -1,7 +1,5 @@
 package com.projetjavaopc.api.controller;
 
-import java.util.Date;
-import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,6 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import com.projetjavaopc.api.models.Users;
 import com.projetjavaopc.api.dto.UserDto;
 import com.projetjavaopc.api.tools.userService.UserService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ApiResponse;
+
 import com.projetjavaopc.api.tools.password.PasswordUtil;
 import com.projetjavaopc.api.tools.specialModel.BasicResponse;
 import com.projetjavaopc.api.tools.response.ResponseProvider;
@@ -24,6 +29,7 @@ import com.projetjavaopc.api.tools.jwt.JwtTokenProvider;
 @RestController
 @RequestMapping(value = "/api/auth")
 @CrossOrigin(origins = "http://localhost:8080")
+@Api(tags = "Authentication", description = "Endpoints for user registration and login")
 public class AuthController {
 
     @Autowired
@@ -41,30 +47,33 @@ public class AuthController {
     @Autowired
     JwtTokenProvider tokenProvider;
 
+    @ApiOperation(value = "Register a new user", response = BasicResponse.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "User registered successfully", response = BasicResponse.class),
+        @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
+    })
     @PostMapping("/register")
-    public ResponseEntity<BasicResponse> register(@Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
+    public ResponseEntity<BasicResponse> register(@ApiParam(value = "User information for a new User to be created.", required = true) @Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(responseProvider.response("An error occured", null));
+            return ResponseEntity.badRequest().body(null);
         }
-        
-        // Créer un objet User à partir de UserDto
-        Users user = new Users();
-        user.setEmail(userDto.getEmail());
-        user.setName(userDto.getName());
-        user.setPassword(userDto.getPassword());
-        user.setCreatedAt(new Date());
-    
         try {
-            Users savedUser = userService.createUser(user);
-            String token = userService.login(savedUser);
-            return ResponseEntity.ok(responseProvider.response("user registered successfully", token));
+            Users savedUser = userService.createUser(userDto);
+            // String token = userService.login(savedUser);
+            return ResponseEntity.ok(responseProvider.response("test", savedUser));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(responseProvider.response(e.toString(), null));
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
+    @ApiOperation(value = "Login a user", response = BasicResponse.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "User logged in successfully", response = BasicResponse.class),
+        @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
+    })
     @PostMapping(value = "/login")
-    public ResponseEntity<BasicResponse> login(@RequestBody Users user) 
+    public ResponseEntity<BasicResponse> login(@ApiParam(value = "User email and password are required for logging in.", required = true) @RequestBody Users user) 
     {
         if(user.getEmail() == null || user.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body(responseProvider.response("Field email is empty", null));
@@ -85,7 +94,6 @@ public class AuthController {
             token = userService.login(userToLog);
         }
         
-
         if(token == null) {
             return ResponseEntity.badRequest().body(responseProvider.response("Password incorrect", null));
         } else {
@@ -94,8 +102,13 @@ public class AuthController {
         
     }
 
+    @ApiOperation(value = "Get the current user", response = BasicResponse.class)
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "User found", response = BasicResponse.class),
+        @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
+    })
     @GetMapping(value = "/me")
-    public ResponseEntity<BasicResponse> getUser(@RequestHeader("Authorization") String token) 
+    public ResponseEntity<BasicResponse> getUser(@ApiParam(value = "Bearer token for authentication", required = true) @RequestHeader("Authorization") String token) 
     {
         token = tokenProvider.extractBearer(token);
         String mail = "AAA";
@@ -107,11 +120,5 @@ public class AuthController {
             return ResponseEntity.badRequest().body(responseProvider.response("User with this mail don't exist", null));
         }
     }
-
-    public Optional<String> getExtensionByStringHandling(String filename) {
-        return Optional.ofNullable(filename)
-          .filter(f -> f.contains("."))
-          .map(f -> f.substring(filename.lastIndexOf(".") + 1));
-      }
     
 }

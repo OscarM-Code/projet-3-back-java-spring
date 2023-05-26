@@ -10,7 +10,7 @@ public class Users {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -27,11 +27,11 @@ public class Users {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
