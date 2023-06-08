@@ -53,17 +53,18 @@ public class AuthController {
         @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
     })
     @PostMapping("/register")
-    public ResponseEntity<BasicResponse> register(@ApiParam(value = "User information for a new User to be created.", required = true) @Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
+    public ResponseEntity<String> register(@ApiParam(value = "User information for a new User to be created.", required = true) @Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(null);
         }
         try {
             Users savedUser = userService.createUser(userDto);
-            // String token = userService.login(savedUser);
-            return ResponseEntity.ok(responseProvider.response("test", savedUser));
+            savedUser.setPassword(passwordUtil.addKeys(userDto.getPassword()));
+            String token = userService.login(savedUser);
+            return ResponseEntity.ok(token);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -73,14 +74,14 @@ public class AuthController {
         @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
     })
     @PostMapping(value = "/login")
-    public ResponseEntity<BasicResponse> login(@ApiParam(value = "User email and password are required for logging in.", required = true) @RequestBody Users user) 
+    public ResponseEntity<String> login(@ApiParam(value = "User email and password are required for logging in.", required = true) @RequestBody Users user) 
     {
         if(user.getEmail() == null || user.getEmail().isEmpty()) {
-            return ResponseEntity.badRequest().body(responseProvider.response("Field email is empty", null));
+            return ResponseEntity.badRequest().body("Field email is empty");
         }
 
         if(user.getPassword() == null || user.getPassword().isEmpty()) {
-            return ResponseEntity.badRequest().body(responseProvider.response("Field password is empty", null));
+            return ResponseEntity.badRequest().body("Field password is empty");
         }
 
         String token = null;
@@ -88,16 +89,14 @@ public class AuthController {
         String passwordToSend = passwordUtil.removeKeys(userToLog.getPassword());
         String passwordToCheck = passwordUtil.addKeys(user.getPassword());
         
-        if (passwordUtil.checkPassword(passwordToSend, passwordToCheck))
-        {
+        try {
+            passwordUtil.checkPassword(passwordToSend, passwordToCheck);
             userToLog.setPassword(passwordToCheck);
             token = userService.login(userToLog);
-        }
-        
-        if(token == null) {
-            return ResponseEntity.badRequest().body(responseProvider.response("Password incorrect", null));
-        } else {
-            return ResponseEntity.ok(responseProvider.response("User login successfully", token));
+            return ResponseEntity.ok(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
         
     }
@@ -108,16 +107,16 @@ public class AuthController {
         @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
     })
     @GetMapping(value = "/me")
-    public ResponseEntity<BasicResponse> getUser(@ApiParam(value = "Bearer token for authentication", required = true) @RequestHeader("Authorization") String token) 
+    public ResponseEntity<Users> getUser(@ApiParam(value = "Bearer token for authentication", required = true) @RequestHeader("Authorization") String token) 
     {
         token = tokenProvider.extractBearer(token);
         String mail = "AAA";
         Users existingUser = userRepository.findByEmail(mail);
         if(existingUser != null) {
             existingUser.setPassword("");
-            return ResponseEntity.ok(responseProvider.response(mail, existingUser));
+            return ResponseEntity.ok(existingUser);
         } else {
-            return ResponseEntity.badRequest().body(responseProvider.response("User with this mail don't exist", null));
+            return ResponseEntity.badRequest().body(null);
         }
     }
     

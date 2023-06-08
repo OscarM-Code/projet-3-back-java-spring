@@ -3,6 +3,7 @@ package com.projetjavaopc.api.tools.userService;
 import com.projetjavaopc.api.dto.UserDto;
 import com.projetjavaopc.api.models.Users;
 import com.projetjavaopc.api.tools.jwt.JwtTokenProvider;
+import com.projetjavaopc.api.tools.password.PasswordUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordUtil passwordUtil;
 
 
     /**
@@ -60,7 +64,7 @@ public class UserService {
         user.setId(1234L);
         user.setEmail(userDto.getEmail());
         user.setName(userDto.getName());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordUtil.encryptPassword(userDto.getPassword()));
         user.setCreatedAt(new Date());
         Users existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null) {
@@ -68,6 +72,7 @@ public class UserService {
         }
         user.setCreatedAt(new Date());
         Users savedUser = userRepository.save(user);
+        //savedUser.setPassword(passwordUtil.addKeys(userDto.getPassword()));
         return savedUser;
     }
 

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.core.env.Environment;
 
@@ -39,7 +40,9 @@ public class DbConnection {
      }
 
      @Bean(name = "transactionManager")
-    public DataSourceTransactionManager getDataSourceTransactionManager() {
-        return new DataSourceTransactionManager(dataSource());
+    public JpaTransactionManager getDataSourceTransactionManager() {
+        JpaTransactionManager jpaTransaction  = new JpaTransactionManager();
+        jpaTransaction.setDataSource(dataSource());
+        return jpaTransaction;
     }
 }
