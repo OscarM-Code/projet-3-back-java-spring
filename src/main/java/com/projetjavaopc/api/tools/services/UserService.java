@@ -1,4 +1,4 @@
-package com.projetjavaopc.api.tools.userService;
+package com.projetjavaopc.api.tools.services;
 
 import com.projetjavaopc.api.dto.UserDto;
 import com.projetjavaopc.api.models.Users;

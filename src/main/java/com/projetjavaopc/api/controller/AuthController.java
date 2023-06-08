@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.projetjavaopc.api.models.Users;
 import com.projetjavaopc.api.dto.UserDto;
-import com.projetjavaopc.api.tools.userService.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
@@ -20,8 +19,8 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiResponse;
 
 import com.projetjavaopc.api.tools.password.PasswordUtil;
-import com.projetjavaopc.api.tools.specialModel.BasicResponse;
-import com.projetjavaopc.api.tools.response.ResponseProvider;
+import com.projetjavaopc.api.tools.responses.MessageResponse;
+import com.projetjavaopc.api.tools.services.UserService;
 import com.projetjavaopc.api.repository.UserRepository;
 import com.projetjavaopc.api.tools.jwt.JwtTokenProvider;
 
@@ -40,18 +39,15 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    ResponseProvider responseProvider;
-
-    @Autowired
     PasswordUtil passwordUtil;
 
     @Autowired
     JwtTokenProvider tokenProvider;
 
-    @ApiOperation(value = "Register a new user", response = BasicResponse.class)
+    @ApiOperation(value = "Register a new user", response = MessageResponse.class)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "User registered successfully", response = BasicResponse.class),
-        @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
+        @ApiResponse(code = 200, message = "User registered successfully", response = MessageResponse.class),
+        @ApiResponse(code = 400, message = "Bad request", response = MessageResponse.class)
     })
     @PostMapping("/register")
     public ResponseEntity<String> register(@ApiParam(value = "User information for a new User to be created.", required = true) @Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
@@ -69,10 +65,10 @@ public class AuthController {
         }
     }
 
-    @ApiOperation(value = "Login a user", response = BasicResponse.class)
+    @ApiOperation(value = "Login a user", response = MessageResponse.class)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "User logged in successfully", response = BasicResponse.class),
-        @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
+        @ApiResponse(code = 200, message = "User logged in successfully", response = MessageResponse.class),
+        @ApiResponse(code = 400, message = "Bad request", response = MessageResponse.class)
     })
     @PostMapping(value = "/login")
     public ResponseEntity<String> login(@ApiParam(value = "User email and password are required for logging in.", required = true) @RequestBody UserDto user) 
@@ -102,10 +98,10 @@ public class AuthController {
         
     }
 
-    @ApiOperation(value = "Get the current user", response = BasicResponse.class)
+    @ApiOperation(value = "Get the current user", response = MessageResponse.class)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "User found", response = BasicResponse.class),
-        @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
+        @ApiResponse(code = 200, message = "User found", response = MessageResponse.class),
+        @ApiResponse(code = 400, message = "Bad request", response = MessageResponse.class)
     })
     @GetMapping(value = "/me")
     public ResponseEntity<Users> getUser(@ApiParam(value = "Bearer token for authentication", required = true) @RequestHeader("Authorization") String token) 

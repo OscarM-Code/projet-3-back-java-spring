@@ -5,16 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.projetjavaopc.api.tools.specialModel.BasicResponse;
-
+import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiResponse;
 
-import com.projetjavaopc.api.tools.response.ResponseProvider;
-import com.projetjavaopc.api.models.Messages;
-import com.projetjavaopc.api.repository.MessagesRepository;
+import com.projetjavaopc.api.tools.responses.MessageResponse;
+import com.projetjavaopc.api.tools.services.MessageService;
+import com.projetjavaopc.api.dto.MessageDto;
+import com.projetjavaopc.api.error.CreateMessageException;
 import com.projetjavaopc.api.tools.jwt.JwtTokenProvider;
 
 
@@ -26,28 +26,31 @@ import com.projetjavaopc.api.tools.jwt.JwtTokenProvider;
 public class MessagesController {
 
     @Autowired
-    private MessagesRepository messagesRepository;
-
-    @Autowired
-    ResponseProvider responseProvider;
+    private MessageService messageService;
 
     @Autowired
     JwtTokenProvider tokenProvider;
 
-    @ApiOperation(value = "Create a message", response = BasicResponse.class)
+    @ApiOperation(value = "Create a message", response = MessageResponse.class)
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Message created successfully", response = BasicResponse.class),
-        @ApiResponse(code = 400, message = "Error during message creation", response = BasicResponse.class)
+        @ApiResponse(code = 200, message = "Message created successfully", response = MessageResponse.class),
+        @ApiResponse(code = 400, message = "Error during message creation", response = MessageResponse.class)
     })
     @PostMapping(value = "")
-    public ResponseEntity<BasicResponse> createRental(@RequestHeader("Authorization") String token, @RequestBody Messages message) 
+    public ResponseEntity<MessageResponse> createRental(@RequestHeader("Authorization") String token, @RequestBody MessageDto message) 
     {
+        MessageResponse messageResponse = new MessageResponse();
         try {
-            Messages messageSaved = messagesRepository.save(message);
-            return ResponseEntity.ok(responseProvider.response("Message created successfully", messageSaved));
+            token = tokenProvider.extractBearer(token);
+            Claims claims = tokenProvider.extractClaims(token);
+            Long id = claims.get("id", Long.class);
+            messageService.createMessage(message, id);
+            messageResponse.setMessage("Message send with success");
+            return ResponseEntity.ok(messageResponse);
         } 
-        catch (Exception e){
-            return ResponseEntity.badRequest().body(responseProvider.response("Error during message creation", e));
+        catch (CreateMessageException e){
+            messageResponse.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(messageResponse);
         }
     }
     

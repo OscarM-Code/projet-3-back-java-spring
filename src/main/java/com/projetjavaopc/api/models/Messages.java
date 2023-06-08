@@ -10,13 +10,13 @@ public class Messages {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "rental_id", nullable = false)
-    private Integer rental_id;
+    private Long rental_id;
     
     @Column(name = "user_id", nullable = false)
-    private Integer user_id;
+    private Long user_id;
 
     @Column(name = "message", nullable = false)
     private String message;
@@ -27,12 +27,28 @@ public class Messages {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getRentalId() {
+        return rental_id;
+    }
+
+    public void setRentalId(Long rental_id) {
+        this.rental_id = rental_id;
+    }
+
+    public Long getUserId() {
+        return user_id;
+    }
+
+    public void setUserId(Long user_id) {
+        this.user_id = user_id;
     }
     
     public String getMessage() {

@@ -27,6 +27,9 @@ public class Rentals {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "owner_id", nullable = false)
+    private Long owner_id;
+
     @Column(name = "created_at")
     private Date createdAt;
 
@@ -81,8 +84,13 @@ public class Rentals {
         this.description = description;
     }
     
+    public Long getOwnerId() {
+        return owner_id;
+    }
 
-    
+    public void setOwnerId(Long owner_id) {
+        this.owner_id = owner_id;
+    }
 
     public Date getCreatedAt() {
         return createdAt;
