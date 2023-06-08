@@ -12,6 +12,7 @@ import com.projetjavaopc.api.models.Users;
 import com.projetjavaopc.api.dto.UserDto;
 import com.projetjavaopc.api.tools.userService.UserService;
 
+import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -74,7 +75,7 @@ public class AuthController {
         @ApiResponse(code = 400, message = "Bad request", response = BasicResponse.class)
     })
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(@ApiParam(value = "User email and password are required for logging in.", required = true) @RequestBody Users user) 
+    public ResponseEntity<String> login(@ApiParam(value = "User email and password are required for logging in.", required = true) @RequestBody UserDto user) 
     {
         if(user.getEmail() == null || user.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body("Field email is empty");
@@ -110,8 +111,11 @@ public class AuthController {
     public ResponseEntity<Users> getUser(@ApiParam(value = "Bearer token for authentication", required = true) @RequestHeader("Authorization") String token) 
     {
         token = tokenProvider.extractBearer(token);
-        String mail = "AAA";
-        Users existingUser = userRepository.findByEmail(mail);
+        Claims claims = tokenProvider.extractClaims(token);
+    
+        // Accédez aux données du token à l'aide des méthodes get() sur l'objet Claims
+        String email = claims.getSubject();
+        Users existingUser = userRepository.findByEmail(email);
         if(existingUser != null) {
             existingUser.setPassword("");
             return ResponseEntity.ok(existingUser);

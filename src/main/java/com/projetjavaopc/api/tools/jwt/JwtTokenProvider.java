@@ -115,6 +115,14 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token);
     }
 
+    public Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     /**
      * Create an authentication context using the content of the JWT token
      *
